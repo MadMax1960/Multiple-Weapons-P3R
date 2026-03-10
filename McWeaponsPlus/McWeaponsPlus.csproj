@@ -40,6 +40,9 @@
     <None Update="Preview.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+	  <None Update="UnrealEssentials\**\*">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
   </ItemGroup>
 
   <ItemGroup>
