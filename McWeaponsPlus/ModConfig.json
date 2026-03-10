@@ -2,7 +2,7 @@
   "ModId": "McWeaponsPlus",
   "ModName": "Multiple Weapons",
   "ModAuthor": "A Mudkip, RayCooper, Teolicht",
-  "ModVersion": "1.0.0",
+  "ModVersion": "1.1.0",
   "ModDescription": "Allows MC to equip more weapons",
   "ModDll": "McWeaponsPlus.dll",
   "ModIcon": "Preview.png",
@@ -145,6 +145,12 @@
           "ReleaseMetadataName": "Reloaded.Universal.FileEmulationFramework.ReleaseMetadata.json"
         }
       }
+    },
+    "GitHubRelease": {
+      "UserName": "MadMax1960",
+      "RepositoryName": "Multiple-Weapons-P3R",
+      "UseReleaseTag": true,
+      "AssetFileName": "Mod.zip"
     }
   },
   "IsUniversalMod": false,
