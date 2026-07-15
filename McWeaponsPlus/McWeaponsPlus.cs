@@ -1,7 +1,8 @@
 ﻿using p3rpc.commonmodutils;
 using Reloaded.Hooks.Definitions;
 using Reloaded.Hooks.Definitions.Enums;
-using System.Runtime.InteropServices;
+using Reloaded.Memory;
+using Reloaded.Memory.Structs;
 
 namespace McWeaponsPlus
 {
@@ -15,12 +16,12 @@ namespace McWeaponsPlus
         private IAsmHook _SaveSelectedEquipment;
         private IAsmHook _ResetSelectedEquipment;
 
-        private IntPtr _equipmentTypePtr;
+        private MemoryAllocation _equipmentType;
 
-        public unsafe McWeaponsPlus(WeaponContext context, Dictionary<string, ModuleBase<WeaponContext>> modules) : base(context, modules)
+        public McWeaponsPlus(WeaponContext context, Dictionary<string, ModuleBase<WeaponContext>> modules) : base(context, modules)
         {
-            _equipmentTypePtr = Marshal.AllocHGlobal(sizeof(int)); // Initialitze equipmentType memory and assign it with -1
-            Marshal.WriteInt32(_equipmentTypePtr, -1);
+            _equipmentType = Memory.Instance.Allocate(sizeof(int)); // Allocate equipmentType memory and assign it with -1
+            Memory.Instance.WriteWithMarshalling(_equipmentType.Address, -1);
 
             _context._utils.SigScan(UEquip_McWeaponsPlus_SIG, "UEquip::McWeaponsPlus", _context._utils.GetDirectAddress, addr =>
             {
@@ -28,7 +29,7 @@ namespace McWeaponsPlus
                 {
                     "use64",
 
-                    $"mov rbx, 0x{_equipmentTypePtr.ToInt64():X}",
+                    $"mov rbx, 0x{_equipmentType.Address:X}",
                     "mov edi, [rbx]",
                     "cmp edi, -0x1",
                     "je .checkWeaponId", // Check whether we are in shop or not
@@ -61,7 +62,7 @@ namespace McWeaponsPlus
                 string[] function =
                 {
                     "use64",
-                    $"mov rbx, 0x{_equipmentTypePtr.ToInt64():X}", // Save shop equipment type as global to check in equipment function later
+                    $"mov rbx, 0x{_equipmentType.Address:X}", // Save shop equipment type as global to check in equipment function later
                     "mov [rbx], r8d"
                 };
 
@@ -73,7 +74,7 @@ namespace McWeaponsPlus
                 string[] function =
                 {
                     "use64",
-                    $"mov r13, 0x{_equipmentTypePtr.ToInt64():X}", // Reset shop equipment type to check in equipment function later
+                    $"mov r13, 0x{_equipmentType.Address:X}", // Reset shop equipment type to check in equipment function later
                     "mov dword [r13], -0x1"
                 };
 
@@ -83,10 +84,7 @@ namespace McWeaponsPlus
 
         ~McWeaponsPlus()
         {
-            if (_equipmentTypePtr != IntPtr.Zero)
-            {
-                Marshal.FreeHGlobal(_equipmentTypePtr);
-            }
+            Memory.Instance.Free(_equipmentType);
         }
 
         public override void Register()
